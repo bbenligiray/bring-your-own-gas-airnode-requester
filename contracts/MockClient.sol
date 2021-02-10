@@ -19,6 +19,7 @@ contract MockClient {
         maxGasContribution = _maxGasContribution;
     }
 
+    // Use ReentrancyGuard or something
     function makeRequest()
         external
         payable
