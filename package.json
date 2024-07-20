@@ -1,5 +1,5 @@
 {
-  "name": "bring-your-own-gas-airnode-client",
+  "name": "bring-your-own-gas-airnode-requester",
   "scripts": {
     "build": "hardhat compile",
     "test": "hardhat run scripts/test.js"

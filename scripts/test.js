@@ -1,32 +1,30 @@
 const hre = require("hardhat");
 
 async function main() {
-  const designatedWalletBalanceTarget = ethers.utils.parseEther('0.1');
+  const sponsorWalletBalanceTarget = ethers.utils.parseEther('0.100');
   const maxGasContribution = hre.ethers.utils.parseEther('0.001');
 
-  // Create a designated wallet
-  const designatedWallet = hre.ethers.Wallet.createRandom();
-  // Fund it with 0.09 ETH
+  const sponsorWallet = hre.ethers.Wallet.createRandom();
   const signers = await hre.ethers.getSigners();
   await signers[0].sendTransaction({
-    to: designatedWallet.address,
-    value: hre.ethers.utils.parseEther('0.09'),
+    to: sponsorWallet.address,
+    value: hre.ethers.utils.parseEther('0.090'),
   });
-  console.log(`Designated wallet balance: ${hre.ethers.utils.formatEther(await hre.waffle.provider.getBalance(designatedWallet.address))} ETH`);
+  console.log(`Sponsor wallet balance target: ${hre.ethers.utils.formatEther(sponsorWalletBalanceTarget)} ETH`);
+  console.log(`maxGasContribution: ${hre.ethers.utils.formatEther(maxGasContribution)} ETH`);
+  console.log(`Sponsor wallet balance: ${hre.ethers.utils.formatEther(await hre.waffle.provider.getBalance(sponsorWallet.address))} ETH`);
 
-  const MockClient = await hre.ethers.getContractFactory("MockClient");
-  const mockClient = await MockClient.deploy(
-    designatedWallet.address,
-    designatedWalletBalanceTarget,
+  const MockRequester = await hre.ethers.getContractFactory("MockRequester");
+  const mockRequester = await MockRequester.deploy(
+    sponsorWallet.address,
+    sponsorWalletBalanceTarget,
     maxGasContribution
   );
 
   for (let i = 0; i < 10; i++) {
     console.log(`Making request #${i}`);
-    const gasCost = await mockClient.estimateGas.makeRequest({ value: maxGasContribution });
-    await mockClient.makeRequest({ value: maxGasContribution });
-    console.log(`Contribution cost ${gasCost.toString()} gas`);
-    console.log(`Designated wallet balance: ${hre.ethers.utils.formatEther(await hre.waffle.provider.getBalance(designatedWallet.address))} ETH`);
+    await mockRequester.makeRequest({ value: maxGasContribution });
+    console.log(`Sponsor wallet balance: ${hre.ethers.utils.formatEther(await hre.waffle.provider.getBalance(sponsorWallet.address))} ETH`);
   }
 }
 
